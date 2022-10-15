@@ -100,12 +100,11 @@ local wlan = {
 		layout = wibox.layout.align.horizontal,
 	},
 	update = function(w, out)
-		if out == "\n" then
-			w.widget.second.text = "disconnected"
-		elseif out == "" then
+		if out:sub(7, 18) == "disconnected" then
+			w.widget.second.text = "disconnected "
+		elseif out:sub(7, 16) == "connecting" then
 			w.widget.second.text = "connecting..."
-		else
-			w.widget.second.text = string.gsub(out, "\n", " ")
+		else w.widget.second.text = out:sub(20, out:find("\n") - 1) .. " "
 		end
 	end
 }
@@ -164,7 +163,7 @@ gears.timer {
 	call_now  = true,
 	autostart = true,
 	callback  = function()
-		awful.spawn.easy_async_with_shell("nmcli | grep connected | cut -b 20-",
+		awful.spawn.easy_async("nmcli",
 			function(out)
 				wlan:update(out)
 			end)
