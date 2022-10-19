@@ -275,6 +275,11 @@ local globalkeys = gears.table.join(
   end,
     { description = "lower volume", group = "volume" }),
 
+  awful.key({}, "Print", function()
+    awful.spawn("flameshot gui")
+  end,
+    { description = "printscreen", group = "print" }),
+
   awful.key({ modkey, "Shift" }, "h", function()
     awful.tag.incnmaster(1, nil, true)
   end,
@@ -450,13 +455,6 @@ end) ]]
 	end
 end) ]]
 
-client.connect_signal("focus", function(c)
-  c.border_color = beautiful.border_focus
-end)
-client.connect_signal("unfocus", function(c)
-  c.border_color = beautiful.border_normal
-end)
-
 client.connect_signal("mouse::enter", function(c)
   c:emit_signal("request::activate", "mouse_enter", { raise = false })
 end)
@@ -464,12 +462,10 @@ end)
 local function update_borders(s)
   local max = awful.layout.getname() == "max"
   local only_one = #s.tiled_clients < 2
-  if max or only_one then
-    for _, c in ipairs(s.clients) do
+  for _, c in ipairs(s.clients) do
+    if max or only_one or c.floating == true then
       c.border_width = 0
-    end
-  else
-    for _, c in ipairs(s.clients) do
+    else
       c.border_width = beautiful.border_width
     end
   end
@@ -483,13 +479,19 @@ local function update_borders_by_tag(t)
   update_borders(t.screen)
 end
 
+client.connect_signal("focus", function(c)
+  c.border_color = beautiful.border_focus
+end)
+client.connect_signal("unfocus", function(c)
+  c.border_color = beautiful.border_normal
+end)
+
 client.connect_signal("unmanage", update_borders_by_client)
 client.connect_signal("manage", update_borders_by_client)
 client.connect_signal("tagged", update_borders_by_client)
-
 tag.connect_signal("property::layout", update_borders_by_tag)
 tag.connect_signal("property::selected", update_borders_by_tag)
 
 -- Autostart applications
--- awful.spawn.with_shell("picom")
--- awful.spawn.with_shell("lxpolkit")
+--[[ awful.spawn.with_shell("picom")
+awful.spawn.with_shell("lxpolkit") ]]
