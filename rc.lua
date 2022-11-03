@@ -38,7 +38,7 @@ end
 -- Variable definitions
 beautiful.init("/home/nikita/.config/awesome/theme.lua")
 local modkey = "Mod4"
-local terminal = "alacritty"
+local terminal = "kitty"
 local editor = os.getenv("EDITOR") or "nano"
 local editor_cmd = terminal .. " -e " .. editor
 
@@ -100,7 +100,7 @@ awful.button({}, 5, function()
 end)) ]]
 
 -- Wallpaper
-local function set_wallpaper(s)
+--[[ local function set_wallpaper(s)
   if beautiful.wallpaper then
     local wallpaper = beautiful.wallpaper
     -- If wallpaper is a function, call it with the screen
@@ -109,20 +109,20 @@ local function set_wallpaper(s)
     end
     gears.wallpaper.maximized(wallpaper, s, true)
   end
-end
+end ]]
 
 -- Module with custom widgets
 local widgets = require("widgets")
 
 -- Setup screens
-screen.connect_signal("property::geometry", set_wallpaper)
+-- screen.connect_signal("property::geometry", set_wallpaper)
 awful.screen.connect_for_each_screen(function(s)
-  set_wallpaper(s)
+  -- set_wallpaper(s)
   awful.tag({ " 1 ", " 2 ", " 3 ", " 4 ", " 5 ", " 6 ", " 7 ", " 8 ", " 9 " },
     s, awful.layout.layouts[1])
 
   -- create a layoutbox widget and buttons
-  s.layoutbox = awful.widget.layoutbox(s)
+  -- s.layoutbox = awful.widget.layoutbox(s)
   --[[ s.layoutbox:buttons(gears.table.join(
   	awful.button({}, 1, function() awful.layout.inc(1) end),
   	awful.button({}, 3, function() awful.layout.inc(-1) end),
@@ -158,12 +158,13 @@ awful.screen.connect_for_each_screen(function(s)
     widgets.time, -- Central widget
     {
       -- Right widgets
-      s.layoutbox,
+      -- s.layoutbox,
+      widgets.layout.widget,
       widgets.keyboardlayout.widget,
       widgets.volume.widget,
-      widgets.memory.widget,
-      widgets.battery.widget,
-      widgets.wlan.widget,
+      widgets.memory,
+      widgets.battery,
+      widgets.wlan,
       spacing = 30,
       layout  = wibox.layout.fixed.horizontal
     },
@@ -460,6 +461,7 @@ client.connect_signal("mouse::enter", function(c)
 end)
 
 local function update_borders(s)
+  widgets.layout:update(#s.clients, awful.layout.getname())
   local max = awful.layout.getname() == "max"
   local only_one = #s.tiled_clients < 2
   for _, c in ipairs(s.clients) do
@@ -493,5 +495,6 @@ tag.connect_signal("property::layout", update_borders_by_tag)
 tag.connect_signal("property::selected", update_borders_by_tag)
 
 -- Autostart applications
---[[ awful.spawn.with_shell("picom")
-awful.spawn.with_shell("lxpolkit") ]]
+awful.spawn.with_shell("feh --bg-max /home/nikita/pictures/neboskreb.jpg")
+awful.spawn.with_shell("picom")
+awful.spawn.with_shell("lxpolkit")
