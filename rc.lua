@@ -496,5 +496,5 @@ tag.connect_signal("property::selected", update_borders_by_tag)
 
 -- Autostart applications
 awful.spawn.with_shell("feh --bg-max /home/nikita/pictures/neboskreb.jpg")
-awful.spawn.with_shell("picom")
+awful.spawn.with_shell("picom -b")
 awful.spawn.with_shell("lxpolkit")
